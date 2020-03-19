@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "453137282802",
+    "firebase_url": "https://letran-333b6.firebaseio.com",
+    "project_id": "letran-333b6",
+    "storage_bucket": "letran-333b6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:453137282802:android:5403ce6ecc9d0305cb026b",
+        "android_client_info": {
+          "package_name": "com.liempo.letran"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "453137282802-fahh231hs2nhqq8ggckkdq9vdeqsctnc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKTIEJAEfWROIqJAiHCcvqny4j3arxoVM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "453137282802-fahh231hs2nhqq8ggckkdq9vdeqsctnc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
