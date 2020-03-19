@@ -24,6 +24,10 @@
                     android:host="www.letran-calamba.edu.ph" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="com.google.firebase.ml.vision.DEPENDENCIES"
+            android:value="barcode" />
     </application>
 
 </manifest>
