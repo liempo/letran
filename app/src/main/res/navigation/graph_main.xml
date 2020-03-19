@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android Studio Bug: unused navigation warning
+still shows up when using FragmentContainerView -->
+<navigation
+    tools:ignore="UnusedNavigation"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/graph_main">
+
+</navigation>
