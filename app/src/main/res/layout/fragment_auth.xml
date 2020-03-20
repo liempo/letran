@@ -39,6 +39,8 @@
         tools:background="@color/colorSecondaryLight"
         app:cameraFacing="back"
         app:cameraAudio="off"
+        app:cameraMode="picture"
+        app:cameraEngine="camera2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/image_banner" />
