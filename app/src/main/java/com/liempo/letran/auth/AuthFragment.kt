@@ -7,17 +7,34 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 
-import com.liempo.letran.R
+import com.liempo.letran.databinding.FragmentAuthBinding
 
 class AuthFragment : Fragment() {
 
     private val model by viewModels<AuthViewModel>()
 
+    // View binding attributes
+    private var _binding: FragmentAuthBinding? = null
+    private val binding get() = _binding!!
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = inflater.inflate(
-        R.layout.auth_fragment,
-        container, false)
+    ): View? {
+        _binding = FragmentAuthBinding.inflate(
+            inflater, container, false)
+        return binding.root
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Setup the camera object
+        binding.camera.setLifecycleOwner(this)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }
