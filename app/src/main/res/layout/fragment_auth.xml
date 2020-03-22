@@ -38,7 +38,17 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image_banner"
-        tools:ignore="PxUsage" />
+        app:layout_constraintTop_toBottomOf="@+id/image_banner" />
+
+    <cdflynn.android.library.checkview.CheckView
+        android:id="@+id/check"
+        android:layout_width="256dp"
+        android:layout_height="256dp"
+        android:layout_margin="24dp"
+        app:checkView_strokeWidth="12dp"
+        app:layout_constraintBottom_toBottomOf="@+id/preview"
+        app:layout_constraintEnd_toEndOf="@+id/preview"
+        app:layout_constraintStart_toStartOf="@+id/preview"
+        app:layout_constraintTop_toTopOf="@+id/preview" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -98,13 +98,7 @@ class AuthFragment : Fragment() {
         val analyzer = BarcodeAnalyzer().apply {
             setOnBarcodeDetectedListener {
                 Timber.d("BarcodeValue: ${it.rawValue}")
-                Timber.d("BarcodeDigitCountVerified: %s",
-                    VerificationUtils.checkDigitCount(it.rawValue))
-                Timber.d("BarcodeCategoryVerified: %s",
-                    VerificationUtils.checkCategory(it.rawValue))
-                Timber.d("BarcodeYearVerified: %s",
-                    VerificationUtils.checkYear(it.rawValue))
-                Timber.d("BarcodeFirstInt: %d", it.rawValue?.first()?.toInt())
+                binding.check.check()
             }
         }
         val analysis = ImageAnalysis(analysisConfig).apply {

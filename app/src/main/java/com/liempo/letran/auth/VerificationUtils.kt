@@ -20,13 +20,13 @@ object VerificationUtils {
         value != null && checkDigitCount(value) &&
                 checkCategory(value) && checkYear(value)
 
-    internal fun checkDigitCount(value: String?): Boolean =
+    private fun checkDigitCount(value: String?): Boolean =
         value != null && value.length == 7
                 && value.all { it.isDigit() }
 
-    internal fun checkCategory(value: String?): Boolean =
+    private fun checkCategory(value: String?): Boolean =
         value != null && Character.getNumericValue(value.first()) in 1..3
 
-    internal fun checkYear(value: String?): Boolean =
+    private fun checkYear(value: String?): Boolean =
         value != null && value.substring(1, 3).toInt() in 0..20
 }
