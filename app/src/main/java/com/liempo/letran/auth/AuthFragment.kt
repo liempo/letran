@@ -98,7 +98,7 @@ class AuthFragment : Fragment() {
         val analyzer = BarcodeAnalyzer().apply {
             setOnBarcodeDetectedListener {
                 Timber.d("BarcodeValue: ${it.rawValue}")
-                binding.check.check()
+                binding.check.check(); stop()
             }
         }
         val analysis = ImageAnalysis(analysisConfig).apply {

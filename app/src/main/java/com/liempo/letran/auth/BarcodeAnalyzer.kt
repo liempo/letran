@@ -13,6 +13,9 @@ class BarcodeAnalyzer: ImageAnalysis.Analyzer {
     // For thread concurrency
     private val isProcessing = AtomicBoolean(false)
 
+    // Stop analysis when set to true
+    private var stop = false
+
     private val detector: FirebaseVisionBarcodeDetector by lazy {
         FirebaseVision.getInstance().visionBarcodeDetector
     }
@@ -24,6 +27,10 @@ class BarcodeAnalyzer: ImageAnalysis.Analyzer {
     internal fun setOnBarcodeDetectedListener(
         unit: ((FirebaseVisionBarcode) -> Unit)) {
         onBarcodeDetectedListener = unit
+    }
+
+    internal fun stop() {
+        stop = true
     }
 
     internal fun setOnFailureListener(
@@ -41,7 +48,7 @@ class BarcodeAnalyzer: ImageAnalysis.Analyzer {
 
     override fun analyze(imageProxy: ImageProxy?, rotationDegrees: Int) {
         // Skip function if still processing
-        if (isProcessing.get())
+        if (isProcessing.get() || stop)
             return
         isProcessing.set(true)
 
