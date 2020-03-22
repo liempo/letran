@@ -1,20 +1,17 @@
 package com.liempo.letran.auth
 
-import android.graphics.ImageFormat
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
-import android.media.Image
+import androidx.core.content.ContextCompat
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetector
-import com.google.firebase.ml.vision.common.FirebaseVisionImage
-import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
 
 import com.liempo.letran.databinding.FragmentAuthBinding
-import timber.log.Timber
 
 class AuthFragment : Fragment() {
 
@@ -44,36 +41,30 @@ class AuthFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Setup the camera object
-        binding.camera.setLifecycleOwner(this)
-        binding.camera.addFrameProcessor { frame ->
-            // First, identify if frame data
-            // is from camera1 or camera2 api
-            if (frame.dataClass == Image::class.java) {
-                Timber.v("CameraView is using camera2")
-                // TODO Parse media.Image (it.getData())
-            } else if (frame.dataClass == ByteArray::class.java) {
-                // Create frame metadata
-                val metadata = FirebaseVisionImageMetadata.Builder()
-                    .setWidth(frame.size.width)
-                    .setHeight(frame.size.height)
-                    .setRotation(frame.rotationToUser)
-                    .setFormat(ImageFormat.NV21)
-                    .build()
+        // Check camera permissions
+        if (ContextCompat.checkSelfPermission(requireContext(),
+                Manifest.permission.CAMERA) ==
+            PackageManager.PERMISSION_GRANTED) {
+            binding.preview.post {
+                // TODO Start CameraX
+            }
+        } else requestPermissions(arrayOf(
+            Manifest.permission.CAMERA), RC_CAMERA)
 
-                // Create firebase compatible object
-                val image = FirebaseVisionImage.fromByteArray(
-                    frame.getData(), metadata)
+    }
 
-                // Try to detect the current frame
-                detector.detectInImage(image)
-                    .addOnSuccessListener { results ->
-                        Timber.i("ResultSize = ${results.size}")
-                    }
-                    .addOnFailureListener { e ->
-                        Timber.e(e,"Failed detecting")
-                    }
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
+        // Check if camera permissions was granted
+        if (requestCode == RC_CAMERA && grantResults.all {
+                it == PackageManager.PERMISSION_GRANTED }) {
+            binding.preview.post {
+                // TODO Start CameraX
             }
         }
     }
@@ -81,5 +72,9 @@ class AuthFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        private const val RC_CAMERA = 420
     }
 }
