@@ -2,11 +2,16 @@ package com.liempo.letran.auth
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Matrix
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
+import androidx.camera.core.CameraX
+import androidx.camera.core.Preview
+import androidx.camera.core.PreviewConfig
 import androidx.core.content.ContextCompat
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetector
@@ -40,13 +45,12 @@ class AuthFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         // Check camera permissions
         if (ContextCompat.checkSelfPermission(requireContext(),
                 Manifest.permission.CAMERA) ==
             PackageManager.PERMISSION_GRANTED) {
             binding.preview.post {
-                // TODO Start CameraX
+                startCameraX()
             }
         } else requestPermissions(arrayOf(
             Manifest.permission.CAMERA), RC_CAMERA)
@@ -58,15 +62,63 @@ class AuthFragment : Fragment() {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        super.onRequestPermissionsResult(requestCode,
+            permissions, grantResults)
 
         // Check if camera permissions was granted
         if (requestCode == RC_CAMERA && grantResults.all {
                 it == PackageManager.PERMISSION_GRANTED }) {
             binding.preview.post {
-                // TODO Start CameraX
+                startCameraX()
             }
         }
+    }
+
+    private fun startCameraX() {
+        // Create configuration object for the viewfinder use case
+        val previewConfig = PreviewConfig.Builder()
+            .setLensFacing(CameraX.LensFacing.BACK)
+            .build()
+
+        val preview = Preview(previewConfig)
+
+        // Every time the viewfinder is updated, recompute layout
+        preview.setOnPreviewOutputUpdateListener {
+            // To update the SurfaceTexture, we have to remove it and re-add it
+            val parent = binding.preview.parent as ViewGroup
+            parent.removeView(binding.preview)
+            parent.addView(binding.preview, 0)
+
+            binding.preview.surfaceTexture = it.surfaceTexture
+            updateTransform()
+        }
+
+        // Bind use cases to lifecycle
+        CameraX.bindToLifecycle(this, preview)
+    }
+
+    private fun updateTransform() {
+        val matrix = Matrix()
+
+        // Compute the center of the view finder
+        val centerX = binding.preview.width / 2f
+        val centerY = binding.preview.height / 2f
+
+        // Correct preview output to account for display rotation
+        val rotationDegrees = when(binding.preview.display.rotation) {
+            Surface.ROTATION_0 -> 0
+            Surface.ROTATION_90 -> 90
+            Surface.ROTATION_180 -> 180
+            Surface.ROTATION_270 -> 270
+            else -> return
+        }
+
+        matrix.postRotate(
+            (-rotationDegrees).toFloat(),
+            centerX, centerY)
+
+        // Finally, apply transformations to our TextureView
+        binding.preview.setTransform(matrix)
     }
 
     override fun onDestroyView() {
