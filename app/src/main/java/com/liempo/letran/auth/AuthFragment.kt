@@ -13,12 +13,9 @@ import androidx.camera.core.*
 import androidx.core.content.ContextCompat
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetector
-import com.google.firebase.ml.vision.common.FirebaseVisionImage
-import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
 
 import com.liempo.letran.databinding.FragmentAuthBinding
 import timber.log.Timber
-import java.util.concurrent.atomic.AtomicBoolean
 
 class AuthFragment : Fragment() {
 
@@ -28,47 +25,6 @@ class AuthFragment : Fragment() {
 
     // Firebase object for barcode detection
     private lateinit var detector: FirebaseVisionBarcodeDetector
-
-    private inner class BarcodeAnalyzer: ImageAnalysis.Analyzer {
-
-        // For thread concurrency
-        val isProcessing = AtomicBoolean(false)
-
-        private fun degreesToFirebaseRotation(degrees: Int): Int = when(degrees) {
-            0 -> FirebaseVisionImageMetadata.ROTATION_0
-            90 -> FirebaseVisionImageMetadata.ROTATION_90
-            180 -> FirebaseVisionImageMetadata.ROTATION_180
-            270 -> FirebaseVisionImageMetadata.ROTATION_270
-            else -> throw Exception("Rotation must be 0, 90, 180, or 270.")
-        }
-
-        override fun analyze(imageProxy: ImageProxy?, rotationDegrees: Int) {
-            // Skip function if still processing
-            if (isProcessing.get())
-                return
-            isProcessing.set(true)
-
-            // Get media.Image object, return if null
-            val mediaImage = imageProxy?.image ?: return
-            // Convert degrees to firebase readable
-            val imageRotation = degreesToFirebaseRotation(rotationDegrees)
-
-            // Create firebase image readable object
-            val image = FirebaseVisionImage
-                .fromMediaImage(mediaImage, imageRotation)
-
-            // Start firebase detection
-            detector.detectInImage(image)
-                .addOnSuccessListener { barcodes ->
-                    isProcessing.set(false)
-                    Timber.v("ResultSize = ${barcodes.size}")
-                }
-                .addOnFailureListener {
-                    isProcessing.set(false)
-                    Timber.e(it, "Error in firebase")
-                }
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -139,8 +95,20 @@ class AuthFragment : Fragment() {
         val analysisConfig = ImageAnalysisConfig.Builder()
             .setLensFacing(CameraX.LensFacing.BACK)
             .build()
+        val analyzer = BarcodeAnalyzer().apply {
+            setOnBarcodeDetectedListener {
+                Timber.d("BarcodeValue: ${it.rawValue}")
+                Timber.d("BarcodeDigitCountVerified: %s",
+                    VerificationUtils.checkDigitCount(it.rawValue))
+                Timber.d("BarcodeCategoryVerified: %s",
+                    VerificationUtils.checkCategory(it.rawValue))
+                Timber.d("BarcodeYearVerified: %s",
+                    VerificationUtils.checkYear(it.rawValue))
+                Timber.d("BarcodeFirstInt: %d", it.rawValue?.first()?.toInt())
+            }
+        }
         val analysis = ImageAnalysis(analysisConfig).apply {
-            setAnalyzer(ContextCompat.getMainExecutor(context), BarcodeAnalyzer())
+            setAnalyzer(ContextCompat.getMainExecutor(context), analyzer)
         }
 
         // Bind use cases to lifecycle
