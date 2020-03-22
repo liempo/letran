@@ -1,4 +1,4 @@
-package com.liempo.letran.auth
+package com.liempo.letran.verify
 
 object VerificationUtils {
 

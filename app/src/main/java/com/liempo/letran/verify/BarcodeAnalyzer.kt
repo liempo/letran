@@ -1,4 +1,4 @@
-package com.liempo.letran.auth
+package com.liempo.letran.verify
 
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy

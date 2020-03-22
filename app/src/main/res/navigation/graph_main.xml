@@ -11,7 +11,7 @@ still shows up when using FragmentContainerView -->
 
     <fragment
         android:id="@+id/authFragment"
-        android:name="com.liempo.letran.auth.AuthFragment"
+        android:name="com.liempo.letran.verify.AuthFragment"
         android:label="auth_fragment"
         tools:layout="@layout/fragment_auth" />
 </navigation>

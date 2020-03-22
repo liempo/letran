@@ -1,4 +1,4 @@
-package com.liempo.letran.auth
+package com.liempo.letran.verify
 
 import android.Manifest
 import android.content.pm.PackageManager
