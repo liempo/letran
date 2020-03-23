@@ -1,6 +1,8 @@
 package com.liempo.letran.verify
 
 import android.Manifest
+import android.app.Activity.RESULT_OK
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Matrix
 import android.os.Bundle
@@ -9,13 +11,18 @@ import android.view.LayoutInflater
 import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.camera.core.*
 import androidx.core.content.ContextCompat
+import com.firebase.ui.auth.AuthUI
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetector
 
 import com.liempo.letran.databinding.FragmentAuthBinding
-import timber.log.Timber
+import com.liempo.letran.R
 
 class AuthFragment : Fragment() {
 
@@ -25,6 +32,14 @@ class AuthFragment : Fragment() {
 
     // Firebase object for barcode detection
     private lateinit var detector: FirebaseVisionBarcodeDetector
+
+    // Firebase auth providers
+    private val providers = arrayListOf(
+        AuthUI.IdpConfig.EmailBuilder().build(),
+        AuthUI.IdpConfig.PhoneBuilder().build())
+
+    // Barcode detected will be saved here
+    private lateinit var barcode: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +68,6 @@ class AuthFragment : Fragment() {
             }
         } else requestPermissions(arrayOf(
             Manifest.permission.CAMERA), RC_CAMERA)
-
     }
 
     override fun onRequestPermissionsResult(
@@ -69,6 +83,25 @@ class AuthFragment : Fragment() {
                 it == PackageManager.PERMISSION_GRANTED }) {
             binding.preview.post {
                 startCameraX()
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == RC_AUTH && resultCode == RESULT_OK) {
+            // Create data to be uploaded
+            val entry = hashMapOf("student_number" to barcode)
+
+            // Update the database with uid as document id
+            FirebaseAuth.getInstance().currentUser?.uid?.let { uid ->
+                Firebase.firestore.collection("profile")
+                    .document(uid).set(entry).addOnSuccessListener {
+                        Toast.makeText(context,
+                            "Updated database",
+                            Toast.LENGTH_LONG).show()
+                    }
             }
         }
     }
@@ -97,8 +130,23 @@ class AuthFragment : Fragment() {
             .build()
         val analyzer = BarcodeAnalyzer().apply {
             setOnBarcodeDetectedListener {
-                Timber.d("BarcodeValue: ${it.rawValue}")
+                // Disregard if verification failed
+                if (!VerificationUtils.verifyAll(it.rawValue))
+                    return@setOnBarcodeDetectedListener
+
+                // I added !! because verifyAll will return false if it.rawValue is null
+                // So using it.rawValue at this point is null-safe and will not crash
+                barcode = it.rawValue!!
                 binding.check.check(); stop()
+
+                // Save
+                // Launch sign-in intent
+                startActivityForResult(AuthUI.getInstance()
+                    .createSignInIntentBuilder()
+                    .setAvailableProviders(providers)
+                    .setLogo(R.drawable.banner_primary)
+                    .setTheme(R.style.AppTheme)
+                    .build(), RC_AUTH)
             }
         }
         val analysis = ImageAnalysis(analysisConfig).apply {
@@ -140,5 +188,6 @@ class AuthFragment : Fragment() {
 
     companion object {
         private const val RC_CAMERA = 420
+        private const val RC_AUTH = 69
     }
 }

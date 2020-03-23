@@ -54,8 +54,17 @@ dependencies {
     implementation "androidx.camera:camera-core:1.0.0-alpha06"
     //noinspection GradleDependency
     implementation "androidx.camera:camera-camera2:1.0.0-alpha06"
+
+    // For the barcode detection
     implementation 'com.google.firebase:firebase-ml-vision:24.0.1'
     implementation 'com.google.firebase:firebase-ml-vision-barcode-model:16.0.2'
+
+    // Other firebase components
+    implementation 'com.firebaseui:firebase-ui-auth:6.2.0'
+    implementation 'com.google.firebase:firebase-firestore-ktx:21.4.1'
+    // Needs to be implemented to avoid duplicate dependency issue
+    // https://groups.google.com/forum/#!topic/guava-announce/Km82fZG68Sw/discussion
+    implementation 'com.google.guava:guava:27.0.1-android'
 
     // Third party views
     implementation 'com.github.cdflynn:checkview:v1.1'
