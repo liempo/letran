@@ -139,14 +139,22 @@ class AuthFragment : Fragment() {
                 barcode = it.rawValue!!
                 binding.check.check(); stop()
 
-                // Save
-                // Launch sign-in intent
-                startActivityForResult(AuthUI.getInstance()
-                    .createSignInIntentBuilder()
-                    .setAvailableProviders(providers)
-                    .setLogo(R.drawable.banner_primary)
-                    .setTheme(R.style.AppTheme)
-                    .build(), RC_AUTH)
+                // Check database if barcode exists
+                Firebase.firestore.collection("profile")
+                    .whereEqualTo("student_number", barcode)
+                    .get().addOnSuccessListener {  query ->
+                        if (query.isEmpty)
+                            // Launch sign-in intent
+                            startActivityForResult(AuthUI.getInstance()
+                                .createSignInIntentBuilder()
+                                .setAvailableProviders(providers)
+                                .setLogo(R.drawable.banner_primary)
+                                .setTheme(R.style.AppTheme)
+                                .build(), RC_AUTH)
+                        // TODO Else start home screen
+                    }
+
+
             }
         }
         val analysis = ImageAnalysis(analysisConfig).apply {
