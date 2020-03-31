@@ -44,6 +44,8 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.2.1'
     implementation 'androidx.navigation:navigation-ui-ktx:2.2.1'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.jakewharton.timber:timber:4.7.1'
 
@@ -61,7 +63,7 @@ dependencies {
 
     // Other firebase components
     implementation 'com.firebaseui:firebase-ui-auth:6.2.0'
-    implementation 'com.google.firebase:firebase-firestore-ktx:21.4.1'
+    implementation 'com.google.firebase:firebase-firestore-ktx:21.4.2'
     // Needs to be implemented to avoid duplicate dependency issue
     // https://groups.google.com/forum/#!topic/guava-announce/Km82fZG68Sw/discussion
     implementation 'com.google.guava:guava:27.0.1-android'
