@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.camera.core.*
 import androidx.core.content.ContextCompat
+import androidx.navigation.fragment.findNavController
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.ktx.firestore
@@ -151,7 +152,8 @@ class AuthFragment : Fragment() {
                                 .setLogo(R.drawable.banner_primary)
                                 .setTheme(R.style.AppTheme)
                                 .build(), RC_AUTH)
-                        // TODO Else start home screen
+                        else findNavController()
+                            .navigate(R.id.action_auth_to_home)
                     }
 
 
