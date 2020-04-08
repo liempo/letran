@@ -148,7 +148,7 @@ class AuthFragment : Fragment() {
                             startActivityForResult(AuthUI.getInstance()
                                 .createSignInIntentBuilder()
                                 .setAvailableProviders(providers)
-                                .setLogo(R.drawable.banner_primary)
+                                .setLogo(R.drawable.banner)
                                 .setTheme(R.style.AppTheme)
                                 .build(), RC_AUTH)
                         // TODO Else start home screen
