@@ -9,13 +9,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.liempo.letran.R
 
-class TimelineAdapter(private val items: ArrayList<String>):
-    RecyclerView.Adapter<TimelineAdapter.ViewHolder>() {
+class BoardAdapter(private val items: ArrayList<String>):
+    RecyclerView.Adapter<BoardAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
         ViewHolder(LayoutInflater.from(
             parent.context).inflate(
-            R.layout.item_timeline,
+            R.layout.item_board,
             parent, false))
 
     override fun getItemCount(): Int = items.size
