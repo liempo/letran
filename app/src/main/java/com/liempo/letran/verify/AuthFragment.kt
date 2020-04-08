@@ -1,13 +1,15 @@
 package com.liempo.letran.verify
 
 import android.Manifest
-import android.app.Activity
+import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Matrix
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
 import android.view.Surface
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.camera.core.*
@@ -19,13 +21,14 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.barcode.FirebaseVisionBarcodeDetector
 
-import com.liempo.letran.databinding.ActivityAuthBinding
+import com.liempo.letran.databinding.FragmentAuthBinding
 import com.liempo.letran.R
 
-class AuthActivity : AppCompatActivity() {
+class AuthFragment : Fragment() {
 
-    // View binding object
-    private lateinit var binding: ActivityAuthBinding
+    // View binding attributes
+    private var _binding: FragmentAuthBinding? = null
+    private val binding get() = _binding!!
 
     // Firebase object for barcode detection
     private lateinit var detector: FirebaseVisionBarcodeDetector
@@ -40,16 +43,24 @@ class AuthActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityAuthBinding
-            .inflate(layoutInflater)
-        setContentView(binding.root)
-
         // Initialize barcode detector
         detector = FirebaseVision.getInstance()
             .visionBarcodeDetector
+    }
 
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentAuthBinding.inflate(
+            inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         // Check camera permissions
-        if (ContextCompat.checkSelfPermission(this,
+        if (ContextCompat.checkSelfPermission(requireContext(),
                 Manifest.permission.CAMERA) ==
             PackageManager.PERMISSION_GRANTED) {
             binding.preview.post {
@@ -79,7 +90,7 @@ class AuthActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == RC_AUTH && resultCode == Activity.RESULT_OK) {
+        if (requestCode == RC_AUTH && resultCode == RESULT_OK) {
             // Create data to be uploaded
             val entry = hashMapOf("student_number" to barcode)
 
@@ -87,8 +98,8 @@ class AuthActivity : AppCompatActivity() {
             FirebaseAuth.getInstance().currentUser?.uid?.let { uid ->
                 Firebase.firestore.collection("profile")
                     .document(uid).set(entry).addOnSuccessListener {
-                        Toast.makeText(this,
-                            "Updated the database",
+                        Toast.makeText(context,
+                            "Updated database",
                             Toast.LENGTH_LONG).show()
                     }
             }
@@ -133,20 +144,21 @@ class AuthActivity : AppCompatActivity() {
                     .whereEqualTo("student_number", barcode)
                     .get().addOnSuccessListener {  query ->
                         if (query.isEmpty)
-                        // Launch sign-in intent
+                            // Launch sign-in intent
                             startActivityForResult(AuthUI.getInstance()
                                 .createSignInIntentBuilder()
                                 .setAvailableProviders(providers)
-                                .setLogo(R.drawable.banner)
+                                .setLogo(R.drawable.banner_primary)
                                 .setTheme(R.style.AppTheme)
                                 .build(), RC_AUTH)
-                        // TODO else set return result and finish
+                        // TODO Else start home screen
                     }
+
+
             }
         }
         val analysis = ImageAnalysis(analysisConfig).apply {
-            setAnalyzer(ContextCompat.getMainExecutor(
-                this@AuthActivity), analyzer)
+            setAnalyzer(ContextCompat.getMainExecutor(context), analyzer)
         }
 
         // Bind use cases to lifecycle
@@ -175,6 +187,11 @@ class AuthActivity : AppCompatActivity() {
 
         // Finally, apply transformations to our TextureView
         binding.preview.setTransform(matrix)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {
