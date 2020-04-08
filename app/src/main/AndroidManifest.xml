@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
+        <activity android:name=".verify.AuthActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,8 +25,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
-                    android:scheme="http"
-                    android:host="www.letran-calamba.edu.ph" />
+                    android:host="www.letran-calamba.edu.ph"
+                    android:scheme="http" />
             </intent-filter>
         </activity>
 
